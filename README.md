@@ -20,13 +20,13 @@
 Via **npm**:
 
 ```bash
-npm install string-scrambler
+npm install string-scrambler-js
 ```
 
 Ou, inclua diretamente no HTML:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/string-scrambler/dist/StringScrambler.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/string-scrambler-js/dist/StringScrambler.min.js"></script>
 ```
 
 ## 🚀 Como Usar
@@ -34,7 +34,7 @@ Ou, inclua diretamente no HTML:
 ### Usando JavaScript Puro
 
 ```javascript
-import StringScrambler from 'string-scrambler';
+import StringScrambler from 'string-scrambler-js';
 
 const scrambler = new StringScrambler();
 
