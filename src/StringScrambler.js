@@ -2,6 +2,7 @@ class StringScrambler {
   constructor() {
     this.animationFrame = null; // Controle da animação
     this.defaultCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    this.isReversing = false; // Indica se está na fase de reversão
   }
 
   /**
@@ -74,7 +75,10 @@ class StringScrambler {
       if (progress < 1) {
         this.animationFrame = requestAnimationFrame(step);
       } else {
-        if (autoReverse) {
+        // Animação completada
+        if (autoReverse && !this.isReversing) {
+          // Pausa antes de reverter
+          this.isReversing = true;
           setTimeout(() => {
             this.scramble({
               start: end,
@@ -90,8 +94,10 @@ class StringScrambler {
               autoReverse,
               ease,
             });
+            this.isReversing = false;
           }, pauseDuration);
         } else if (loop) {
+          // Pausa antes de reiniciar
           setTimeout(() => {
             this.scramble({
               start,

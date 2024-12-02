@@ -51,9 +51,11 @@
       scramblerRandom.scramble({
         start: "HELLO",
         end: "WORLD",
-        duration: 5000,
-        swapSpeed: 100,
+        duration: 3000,
+        swapSpeed: 10,
+        pauseDuration: 1000,
         mode: "random",
+        loop: true,
         onUpdate: (value) => {
           document.getElementById("output-random").textContent = value;
         },
@@ -67,9 +69,11 @@
       scramblerSequential.scramble({
         start: "HELLO",
         end: "WORLD",
-        duration: 5000,
-        swapSpeed: 100,
+        duration: 3000,
+        swapSpeed: 10,
+        pauseDuration: 1000,
         mode: "sequential",
+        loop: true,
         onUpdate: (value) => {
           document.getElementById("output-sequential").textContent = value;
         },
@@ -83,9 +87,11 @@
       scramblerWave.scramble({
         start: "HELLO",
         end: "WORLD",
-        duration: 5000,
-        swapSpeed: 100,
+        duration: 3000,
+        swapSpeed: 10,
+        pauseDuration: 1000,
         mode: "wave",
+        loop: true,
         onUpdate: (value) => {
           document.getElementById("output-wave").textContent = value;
         },
