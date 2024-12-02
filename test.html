@@ -1,29 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>StringScrambler Test</title>
-    <script src="./dist/StringScrambler.min.js"></script>
-  </head>
-  <body>
-    <h1>StringScrambler Test</h1>
-    <p id="output">Loading...</p>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StringScrambler Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 30px;
+    }
 
-    <script>
-      const scrambler = new StringScrambler();
+    .section {
+      margin-bottom: 30px;
+    }
 
-      scrambler.scramble({
+    .output {
+      font-size: 2em;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/string-scrambler-js@latest/dist/StringScrambler.min.js"></script>
+</head>
+<body>
+  <h1>StringScrambler Test</h1>
+
+  <!-- Exemplo do modo Random -->
+  <div class="section">
+    <h2>Mode: Random</h2>
+    <div id="output-random" class="output">Loading...</div>
+  </div>
+
+  <!-- Exemplo do modo Sequential -->
+  <div class="section">
+    <h2>Mode: Sequential</h2>
+    <div id="output-sequential" class="output">Loading...</div>
+  </div>
+
+  <!-- Exemplo do modo Wave -->
+  <div class="section">
+    <h2>Mode: Wave</h2>
+    <div id="output-wave" class="output">Loading...</div>
+  </div>
+
+  <script>
+    if (typeof StringScrambler === "function") {
+      // Exemplo do modo Random
+      const scramblerRandom = new StringScrambler();
+      scramblerRandom.scramble({
         start: "HELLO",
         end: "WORLD",
-        duration: 3000,
+        duration: 5000,
         swapSpeed: 100,
-        pauseDuration: 2000,
-        mode: "wave", // Teste outros modos: "random", "wave"
-        autoReverse: true,
-        onUpdate: (value) => console.log(value),
-        onComplete: () => console.log("Done!"),
+        mode: "random",
+        onUpdate: (value) => {
+          document.getElementById("output-random").textContent = value;
+        },
+        onComplete: () => {
+          console.log("Random animation complete!");
+        },
       });
-    </script>
-  </body>
+
+      // Exemplo do modo Sequential
+      const scramblerSequential = new StringScrambler();
+      scramblerSequential.scramble({
+        start: "HELLO",
+        end: "WORLD",
+        duration: 5000,
+        swapSpeed: 100,
+        mode: "sequential",
+        onUpdate: (value) => {
+          document.getElementById("output-sequential").textContent = value;
+        },
+        onComplete: () => {
+          console.log("Sequential animation complete!");
+        },
+      });
+
+      // Exemplo do modo Wave
+      const scramblerWave = new StringScrambler();
+      scramblerWave.scramble({
+        start: "HELLO",
+        end: "WORLD",
+        duration: 5000,
+        swapSpeed: 100,
+        mode: "wave",
+        onUpdate: (value) => {
+          document.getElementById("output-wave").textContent = value;
+        },
+        onComplete: () => {
+          console.log("Wave animation complete!");
+        },
+      });
+    } else {
+      document.querySelectorAll(".output").forEach((output) => {
+        output.textContent = "Error: StringScrambler not found!";
+      });
+    }
+  </script>
+</body>
 </html>
