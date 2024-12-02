@@ -126,3 +126,6 @@ class StringScrambler {
 }
 
 export default StringScrambler;
+
+export { StringScrambler };
+

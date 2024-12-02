@@ -3,16 +3,17 @@ const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
   mode: 'production',
-  entry: './src/StringScrambler.js', // Arquivo de entrada
+  entry: './src/StringScrambler.js',
   output: {
-    filename: 'StringScrambler.min.js', // Nome do arquivo de saída
+    filename: 'StringScrambler.min.js',
     path: path.resolve(__dirname, 'dist'),
-    library: 'StringScrambler', // Nome da biblioteca exportada
-    libraryTarget: 'umd', // Tipo de exportação
-    globalObject: 'this', // Garante compatibilidade com Node.js e navegadores
+    library: 'StringScrambler', // Nome global
+    libraryTarget: 'umd', // Suporte universal
+    globalObject: "typeof self !== 'undefined' ? self : this", // Suporte a navegador e Node.js
+    libraryExport: 'default', // Exporta apenas a classe padrão
   },
   optimization: {
-    minimize: true, // Habilita minificação
+    minimize: true,
     minimizer: [new TerserPlugin()],
   },
 };
