@@ -9,23 +9,29 @@ class StringScrambler {
    * @param {Object} options - Configurações da animação.
    * @param {string} options.start - String inicial.
    * @param {string} options.end - String final.
-   * @param {number} options.duration - Duração da animação (em ms).
+   * @param {number} options.duration - Duração total da animação (em ms).
+   * @param {number} [options.swapSpeed] - Velocidade em ms para troca de letras durante a animação.
+   * @param {number} [options.pauseDuration] - Tempo de pausa entre loops ou reversões (em ms).
    * @param {function} options.onUpdate - Callback para atualizar a string durante a animação.
    * @param {function} [options.onComplete] - Callback para o término da animação.
    * @param {string} [options.mode] - Modo de scrambling ("random", "sequential", "wave").
    * @param {string} [options.characters] - Conjunto de caracteres permitidos no scrambling.
-   * @param {boolean} [options.loop] - Define se a animação será contínua.
+   * @param {boolean} [options.loop] - Define se a animação será contínua (volta automaticamente).
+   * @param {boolean} [options.autoReverse] - Faz loop automático alternando entre `start` e `end`.
    * @param {string} [options.ease] - Tipo de easing ("linear", "ease-in", "ease-out").
    */
   scramble({
     start = "",
     end = "",
     duration = 1000,
+    swapSpeed = 50, // Velocidade padrão de troca de letras (em ms)
+    pauseDuration = 500, // Pausa padrão entre loops (em ms)
     onUpdate,
     onComplete,
     mode = "random",
     characters = this.defaultCharacters,
     loop = false,
+    autoReverse = false,
     ease = "linear",
   }) {
     const startTime = performance.now();
@@ -39,26 +45,66 @@ class StringScrambler {
 
     const easing = easingFunctions[ease] || easingFunctions.linear;
 
+    let lastSwapTime = 0; // Controle de tempo para trocas de letras
+
     const step = (currentTime) => {
       const elapsedTime = currentTime - startTime;
       let progress = Math.min(elapsedTime / duration, 1);
       progress = easing(progress);
 
-      const interpolated = this.interpolateStrings({
-        start,
-        end,
-        progress,
-        maxLength,
-        mode,
-        characters,
-      });
+      // Atualiza letras apenas se passar o tempo de swapSpeed
+      if (currentTime - lastSwapTime >= swapSpeed) {
+        lastSwapTime = currentTime;
 
-      if (onUpdate) onUpdate(interpolated);
+        const interpolated = this.interpolateStrings({
+          start,
+          end,
+          progress,
+          maxLength,
+          mode,
+          characters,
+        });
+
+        if (onUpdate) onUpdate(interpolated);
+      }
 
       if (progress < 1) {
         this.animationFrame = requestAnimationFrame(step);
+      } else if (autoReverse) {
+        // Alterna entre as strings se autoReverse estiver ativado
+        setTimeout(() => {
+          this.scramble({
+            start: end,
+            end: start,
+            duration,
+            swapSpeed,
+            pauseDuration,
+            onUpdate,
+            onComplete,
+            mode,
+            characters,
+            loop,
+            autoReverse,
+            ease,
+          });
+        }, pauseDuration);
       } else if (loop) {
-        this.scramble({ start, end, duration, onUpdate, onComplete, mode, characters, loop, ease });
+        // Reinicia o loop com uma pausa
+        setTimeout(() => {
+          this.scramble({
+            start,
+            end,
+            duration,
+            swapSpeed,
+            pauseDuration,
+            onUpdate,
+            onComplete,
+            mode,
+            characters,
+            loop,
+            ease,
+          });
+        }, pauseDuration);
       } else if (onComplete) {
         onComplete();
       }
@@ -128,4 +174,3 @@ class StringScrambler {
 export default StringScrambler;
 
 export { StringScrambler };
-

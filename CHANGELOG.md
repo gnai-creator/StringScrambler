@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.11] - 2024-12-02
+### Feature
+- Adicionado velocidade de transição e também loop e pausa
+
 ## [1.0.8] - 2024-12-02
 ### Fixed
 - Corrigindo pacote para exportação webpack
