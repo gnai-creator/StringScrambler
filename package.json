@@ -1,0 +1,14 @@
+{
+  "main": "src/StringScrambler.js",
+  "files": [
+    "src/"
+  ],
+  "keywords": [
+    "string",
+    "scrambler",
+    "animation",
+    "javascript"
+  ],
+  "author": "Felipe Maya Muniz",
+  "license": "MIT"
+}
