@@ -1,22 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>StringScrambler Test</title>
-  <script src="./dist/StringScrambler.min.js"></script>
-</head>
-<body>
-  <script>
-    console.log(typeof StringScrambler); // Deve retornar "function"
-    const scrambler = new StringScrambler();
-    scrambler.scramble({
-      start: 'HELLO',
-      end: 'WORLD',
-      duration: 2000,
-      onUpdate: (value) => console.log(value),
-      onComplete: () => console.log('Done!'),
-    });
-  </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StringScrambler Test</title>
+    <script src="./dist/StringScrambler.min.js"></script>
+  </head>
+  <body>
+    <h1>StringScrambler Test</h1>
+    <p id="output">Loading...</p>
+
+    <script>
+      const scrambler = new StringScrambler();
+
+      scrambler.scramble({
+        start: "HELLO",
+        end: "WORLD",
+        duration: 3000,
+        swapSpeed: 100,
+        pauseDuration: 2000,
+        mode: "wave", // Teste outros modos: "random", "wave"
+        autoReverse: true,
+        onUpdate: (value) => console.log(value),
+        onComplete: () => console.log("Done!"),
+      });
+    </script>
+  </body>
 </html>

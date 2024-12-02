@@ -34,6 +34,9 @@ class StringScrambler {
     autoReverse = false,
     ease = "linear",
   }) {
+    // Cancela qualquer animação anterior para evitar conflitos
+    this.stop();
+
     const startTime = performance.now();
     const maxLength = Math.max(start.length, end.length);
 
@@ -70,43 +73,44 @@ class StringScrambler {
 
       if (progress < 1) {
         this.animationFrame = requestAnimationFrame(step);
-      } else if (autoReverse) {
-        // Alterna entre as strings se autoReverse estiver ativado
-        setTimeout(() => {
-          this.scramble({
-            start: end,
-            end: start,
-            duration,
-            swapSpeed,
-            pauseDuration,
-            onUpdate,
-            onComplete,
-            mode,
-            characters,
-            loop,
-            autoReverse,
-            ease,
-          });
-        }, pauseDuration);
-      } else if (loop) {
-        // Reinicia o loop com uma pausa
-        setTimeout(() => {
-          this.scramble({
-            start,
-            end,
-            duration,
-            swapSpeed,
-            pauseDuration,
-            onUpdate,
-            onComplete,
-            mode,
-            characters,
-            loop,
-            ease,
-          });
-        }, pauseDuration);
-      } else if (onComplete) {
-        onComplete();
+      } else {
+        if (autoReverse) {
+          setTimeout(() => {
+            this.scramble({
+              start: end,
+              end: start,
+              duration,
+              swapSpeed,
+              pauseDuration,
+              onUpdate,
+              onComplete,
+              mode,
+              characters,
+              loop,
+              autoReverse,
+              ease,
+            });
+          }, pauseDuration);
+        } else if (loop) {
+          setTimeout(() => {
+            this.scramble({
+              start,
+              end,
+              duration,
+              swapSpeed,
+              pauseDuration,
+              onUpdate,
+              onComplete,
+              mode,
+              characters,
+              loop,
+              autoReverse,
+              ease,
+            });
+          }, pauseDuration);
+        } else if (onComplete) {
+          onComplete();
+        }
       }
     };
 
@@ -131,19 +135,23 @@ class StringScrambler {
       const startChar = start[i] || " ";
       const endChar = end[i] || " ";
 
-      if (startChar === endChar || progress === 1) {
-        result.push(endChar);
-        continue;
-      }
-
-      if (mode === "random") {
-        result.push(this.randomChar(characters));
-      } else if (mode === "sequential") {
-        const midPoint = Math.floor(maxLength * progress);
-        result.push(i <= midPoint ? endChar : this.randomChar(characters));
-      } else if (mode === "wave") {
-        const waveEffect = Math.sin((i / maxLength + progress) * Math.PI * 2);
-        result.push(waveEffect > 0.5 ? endChar : this.randomChar(characters));
+      if (progress === 1) {
+        result.push(endChar); // Finaliza na string final
+      } else if (progress === 0) {
+        result.push(startChar); // Começa na string inicial
+      } else if (startChar === endChar) {
+        result.push(startChar); // Caracteres iguais permanecem os mesmos
+      } else {
+        // Aplica os modos de transição
+        if (mode === "random") {
+          result.push(this.randomChar(characters));
+        } else if (mode === "sequential") {
+          const threshold = Math.floor(progress * maxLength);
+          result.push(i <= threshold ? endChar : startChar);
+        } else if (mode === "wave") {
+          const waveEffect = Math.sin((i / maxLength + progress) * Math.PI * 2);
+          result.push(waveEffect > 0.5 ? endChar : startChar);
+        }
       }
     }
 
