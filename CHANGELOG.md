@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.6] - 2024-12-02
+### Fixed
+- Corrigindo pacote para exportação no arquivo original
+
 ## [1.0.5] - 2024-12-02
 ### Fixed
 - Corrigindo pacote para exportação 

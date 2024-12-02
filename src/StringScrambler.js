@@ -124,3 +124,5 @@ class StringScrambler {
     }
   }
 }
+
+export default StringScrambler;
