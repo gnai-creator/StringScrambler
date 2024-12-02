@@ -1,6 +1,6 @@
 {
   "name": "string-scrambler-js",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "A flexible JavaScript library for dynamic string scrambling animations.",
   "main": "src/StringScrambler.js",
   "files": [
