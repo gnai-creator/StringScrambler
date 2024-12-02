@@ -95,7 +95,7 @@ export default ScrambleText;
 Clone o repositório:
 
 ```bash
-git clone https://github.com/seu-usuario/StringScrambler.git
+git clone https://github.com/gnai-creator/StringScrambler
 cd StringScrambler
 npm install
 ```

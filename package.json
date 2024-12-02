@@ -1,14 +1,25 @@
 {
+  "name": "string-scrambler-js",
+  "version": "1.0.3",
+  "description": "A flexible JavaScript library for dynamic string scrambling animations.",
   "main": "src/StringScrambler.js",
-  "files": [
-    "src/"
-  ],
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint src/**/*.js",
+    "format": "prettier --write src/**/*.js"
+  },
   "keywords": [
     "string",
     "scrambler",
     "animation",
     "javascript"
   ],
-  "author": "Felipe Maya Muniz",
-  "license": "MIT"
+  "author": "Felipe Maya Muniz <felipemuniz82@hotmail.com>",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "eslint": "^8.0.0",
+    "prettier": "^2.0.0"
+  }
 }
