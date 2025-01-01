@@ -21,7 +21,8 @@
       color: #333;
     }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/string-scrambler-js@latest/dist/StringScrambler.min.js"></script>
+  <!-- Certifique-se de que o caminho do arquivo minificado está correto -->
+  <script src="./dist/StringScrambler.min.js"></script>
 </head>
 <body>
   <h1>StringScrambler Test</h1>
@@ -51,11 +52,13 @@
       scramblerRandom.scramble({
         start: "HELLO",
         end: "WORLD",
-        duration: 3000,
-        swapSpeed: 10,
-        pauseDuration: 1000,
+        initialPause: 1000,  // Pausa inicial
+        transitionPause: 2000, // Pausa entre transições
+        duration: 2000,
+        swapSpeed: 50,
         mode: "random",
         loop: true,
+        autoReverse: true, // Habilita o loop reverso
         onUpdate: (value) => {
           document.getElementById("output-random").textContent = value;
         },
@@ -69,11 +72,13 @@
       scramblerSequential.scramble({
         start: "HELLO",
         end: "WORLD",
-        duration: 3000,
-        swapSpeed: 10,
-        pauseDuration: 1000,
+        initialPause: 1000,  // Pausa inicial
+        transitionPause: 2000, // Pausa entre transições
+        duration: 2000,
+        swapSpeed: 50,
         mode: "sequential",
         loop: true,
+        autoReverse: true, // Habilita o loop reverso
         onUpdate: (value) => {
           document.getElementById("output-sequential").textContent = value;
         },
@@ -87,11 +92,13 @@
       scramblerWave.scramble({
         start: "HELLO",
         end: "WORLD",
-        duration: 3000,
-        swapSpeed: 10,
-        pauseDuration: 1000,
+        initialPause: 1000,  // Pausa inicial
+        transitionPause: 2000, // Pausa entre transições
+        duration: 2000,
+        swapSpeed: 50,
         mode: "wave",
         loop: true,
+        autoReverse: true, // Habilita o loop reverso
         onUpdate: (value) => {
           document.getElementById("output-wave").textContent = value;
         },

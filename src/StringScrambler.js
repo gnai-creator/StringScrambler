@@ -1,32 +1,16 @@
 class StringScrambler {
   constructor() {
-    this.animationFrame = null; // Controle da animação
+    this.animationFrame = null;
     this.defaultCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    this.isReversing = false; // Indica se está na fase de reversão
   }
 
-  /**
-   * Inicia a animação de scrambling.
-   * @param {Object} options - Configurações da animação.
-   * @param {string} options.start - String inicial.
-   * @param {string} options.end - String final.
-   * @param {number} options.duration - Duração total da animação (em ms).
-   * @param {number} [options.swapSpeed] - Velocidade em ms para troca de letras durante a animação.
-   * @param {number} [options.pauseDuration] - Tempo de pausa entre loops ou reversões (em ms).
-   * @param {function} options.onUpdate - Callback para atualizar a string durante a animação.
-   * @param {function} [options.onComplete] - Callback para o término da animação.
-   * @param {string} [options.mode] - Modo de scrambling ("random", "sequential", "wave").
-   * @param {string} [options.characters] - Conjunto de caracteres permitidos no scrambling.
-   * @param {boolean} [options.loop] - Define se a animação será contínua (volta automaticamente).
-   * @param {boolean} [options.autoReverse] - Faz loop automático alternando entre `start` e `end`.
-   * @param {string} [options.ease] - Tipo de easing ("linear", "ease-in", "ease-out").
-   */
   scramble({
     start = "",
     end = "",
     duration = 1000,
-    swapSpeed = 50, // Velocidade padrão de troca de letras (em ms)
-    pauseDuration = 500, // Pausa padrão entre loops (em ms)
+    swapSpeed = 50,
+    initialPause = 500,
+    transitionPause = 500,
     onUpdate,
     onComplete,
     mode = "random",
@@ -35,35 +19,35 @@ class StringScrambler {
     autoReverse = false,
     ease = "linear",
   }) {
-    // Cancela qualquer animação anterior para evitar conflitos
-    this.stop();
+    this.stop(); // Cancela qualquer animação anterior
 
     const startTime = performance.now();
     const maxLength = Math.max(start.length, end.length);
+    let currentProgress = 0;
+    let hasCompletedFirstCycle = false; // Flag para garantir que a primeira animação terminou
 
+    // Função de easing (transição suave)
     const easingFunctions = {
       linear: (t) => t,
       "ease-in": (t) => t * t,
       "ease-out": (t) => t * (2 - t),
     };
-
     const easing = easingFunctions[ease] || easingFunctions.linear;
 
-    let lastSwapTime = 0; // Controle de tempo para trocas de letras
-
+    // Função para atualizar a animação
     const step = (currentTime) => {
       const elapsedTime = currentTime - startTime;
-      let progress = Math.min(elapsedTime / duration, 1);
-      progress = easing(progress);
+      currentProgress = Math.min(elapsedTime / duration, 1);
+      currentProgress = easing(currentProgress);
 
-      // Atualiza letras apenas se passar o tempo de swapSpeed
-      if (currentTime - lastSwapTime >= swapSpeed) {
-        lastSwapTime = currentTime;
+      // Atualiza as letras de acordo com o swapSpeed
+      if (elapsedTime - (this.lastSwapTime || 0) >= swapSpeed) {
+        this.lastSwapTime = elapsedTime;
 
         const interpolated = this.interpolateStrings({
           start,
           end,
-          progress,
+          progress: currentProgress,
           maxLength,
           mode,
           characters,
@@ -72,20 +56,23 @@ class StringScrambler {
         if (onUpdate) onUpdate(interpolated);
       }
 
-      if (progress < 1) {
+      // Se não completou a animação, continua
+      if (currentProgress < 1) {
         this.animationFrame = requestAnimationFrame(step);
       } else {
-        // Animação completada
-        if (autoReverse && !this.isReversing) {
-          // Pausa antes de reverter
-          this.isReversing = true;
-          setTimeout(() => {
+        // A animação terminou
+        setTimeout(() => {
+          if (autoReverse && !hasCompletedFirstCycle) {
+            // A reversão só deve ocorrer após a primeira animação completa
+            hasCompletedFirstCycle = true; // Marca a primeira animação como concluída
+            // Inicia a reversão após a animação normal
             this.scramble({
               start: end,
               end: start,
               duration,
               swapSpeed,
-              pauseDuration,
+              initialPause,
+              transitionPause,
               onUpdate,
               onComplete,
               mode,
@@ -94,17 +81,15 @@ class StringScrambler {
               autoReverse,
               ease,
             });
-            this.isReversing = false;
-          }, pauseDuration);
-        } else if (loop) {
-          // Pausa antes de reiniciar
-          setTimeout(() => {
+          } else if (loop) {
+            // Repete a animação
             this.scramble({
               start,
               end,
               duration,
               swapSpeed,
-              pauseDuration,
+              initialPause,
+              transitionPause,
               onUpdate,
               onComplete,
               mode,
@@ -113,50 +98,43 @@ class StringScrambler {
               autoReverse,
               ease,
             });
-          }, pauseDuration);
-        } else if (onComplete) {
-          onComplete();
-        }
+          } else if (onComplete) {
+            // Chama o callback quando a animação terminar
+            onComplete();
+          }
+        }, transitionPause);
       }
     };
 
-    this.animationFrame = requestAnimationFrame(step);
+    // Pausa inicial antes de começar a transição
+    setTimeout(() => {
+      this.animationFrame = requestAnimationFrame(step);
+    }, initialPause);
   }
 
-  /**
-   * Interpola as strings com base no progresso e no modo de animação.
-   * @param {Object} options - Configurações de interpolação.
-   * @param {string} options.start - String inicial.
-   * @param {string} options.end - String final.
-   * @param {number} options.progress - Progresso atual (0 a 1).
-   * @param {number} options.maxLength - Comprimento máximo das strings.
-   * @param {string} options.mode - Modo de interpolação ("random", "sequential", "wave").
-   * @param {string} options.characters - Conjunto de caracteres embaralháveis.
-   * @returns {string} String interpolada.
-   */
   interpolateStrings({ start, end, progress, maxLength, mode, characters }) {
     const result = [];
 
     for (let i = 0; i < maxLength; i++) {
-      const startChar = start[i] || " ";
+      const startChar = start[i] || " "; // Preenche com espaço caso a string seja menor
       const endChar = end[i] || " ";
 
       if (progress === 1) {
-        result.push(endChar); // Finaliza na string final
+        result.push(endChar); // Se o progresso é 1, a transição terminou
       } else if (progress === 0) {
-        result.push(startChar); // Começa na string inicial
+        result.push(startChar); // Se o progresso é 0, exibe startChar
       } else if (startChar === endChar) {
-        result.push(startChar); // Caracteres iguais permanecem os mesmos
+        // Se as letras forem iguais, mantém o startChar
+        result.push(startChar);
       } else {
-        // Aplica os modos de transição
         if (mode === "random") {
-          result.push(this.randomChar(characters));
+          result.push(Math.random() < progress ? endChar : startChar);
         } else if (mode === "sequential") {
           const threshold = Math.floor(progress * maxLength);
           result.push(i <= threshold ? endChar : startChar);
         } else if (mode === "wave") {
-          const waveEffect = Math.sin((i / maxLength + progress) * Math.PI * 2);
-          result.push(waveEffect > 0.5 ? endChar : startChar);
+          const waveProgress = 0.5 * (1 - Math.cos(Math.PI * progress)); // Função de onda suave
+          result.push(waveProgress < 1 ? startChar : endChar);
         }
       }
     }
@@ -164,27 +142,7 @@ class StringScrambler {
     return result.join("");
   }
 
-  /**
-   * Gera um caractere aleatório do conjunto fornecido.
-   * @param {string} characters - Conjunto de caracteres permitidos.
-   * @returns {string} Um caractere aleatório.
-   */
-  randomChar(characters) {
-    const index = Math.floor(Math.random() * characters.length);
-    return characters[index];
-  }
-
-  /**
-   * Cancela a animação atual.
-   */
   stop() {
-    if (this.animationFrame) {
-      cancelAnimationFrame(this.animationFrame);
-      this.animationFrame = null;
-    }
+    cancelAnimationFrame(this.animationFrame); // Cancela o quadro da animação
   }
 }
-
-export default StringScrambler;
-
-export { StringScrambler };
